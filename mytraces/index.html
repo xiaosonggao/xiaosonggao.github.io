@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>我的轨迹</title>
+    <style>
+        html, body, #map {
+            height: 95%;
+            width: 100%;
+            margin: 0;
+        }
+    </style>
+
+    
+</head>
+<body>
+<div id='go-back'>
+    <a href="../index.html">返回首页</a>
+</div>
+
+<!-- <div>
+  <div id='go-back'>
+    <a href="../index.html">返回首页</a>
+  </div> -->
+  <div id="map">
+
+  </div>
+<!-- </div> -->
+
+<script src="http://a.amap.com/Loca/static/mock/districts.js"></script>
+<script src="https://webapi.amap.com/loader.js"></script>
+<script src="http://webapi.amap.com/maps?v=1.4.15&key=78d322c3b45ab289302c354fd993362a"></script>
+<script src="http://webapi.amap.com/loca?v=1.3.2&key=78d322c3b45ab289302c354fd993362a"></script>
+<script src="http://a.amap.com/Loca/static/dist/jquery.min.js"></script>
+<script type='text/javascript', src='./d.js'></script>
+<script type='text/javascript', src='./s.js'
+
+<!-- <script type='text/javascript', src='../initgaode.js'></script> -->
+<script>
+
+var map = new AMap.Map('map', {
+        // mapStyle: 'amap://styles/db9efe6a1745ac24b7269b862f359536',
+        mapStyle: 'amap://styles/db9efe6a1745ac24b7269b862f359536',
+        features: ['bg', 'road'],
+        pitch: 40,
+        viewMode: '3D',
+        zoom: 6
+
+    });
+
+    var layer = new Loca.LinkLayer({
+        map: map,
+        fitView: true,
+    });
+    
+    
+    layer.setData(traces, {
+        lnglat: 'line'
+    });
+    
+    layer.setOptions({
+        blendMode: 'lighter',
+        style: {
+            // 曲率 [-1, 1] 区间
+            // curveness: function(data) {
+            //   if(data.value.dis < 100){
+            //     return 0.07;
+            //   } else if(data.value.dis < 300){
+            //     return 0.05;
+            //   } else if(data.value.dis < 500){
+            //     return 0.02;
+            //   }  else if(data.value.dis < 700){
+            //     return 0.01;
+            //   } else {
+            //     return 0.005;
+            //   }
+            // },
+            curveness: function(data){
+              if(data.value.dist<2){
+                return 0.25;
+              }
+              else if(data.value.dist<5){
+                return 0.5;
+              }
+              else if (data.value.dist<10){
+                return 0.75;
+              }
+              else{
+                return 1;
+              }
+            },
+            opacity: 1,
+            color: '#225ea8',
+            borderWidth: 2
+        }
+    });
+    
+    layer.render();
+
+    var layer2 = new Loca.RoundPointLayer({
+      map: map,
+      fitView: true
+    })
+    layer2.setData(stations, {
+      lnglat: 'lonlat'
+    })
+    layer2.setOptions({
+      style:{
+        radius: function(data){
+          var v = data.value.nums;
+          if(v<5){
+            return 5;
+          }
+          if(v<=10){
+            return 15;
+          }
+          if(v>10){
+            return 20;
+          }
+        },
+        color: function(data){
+          var v = data.value.nums;
+          if (v > 10) {
+              return '#82cf9c';
+          } else if (v <= 10 && v >= 5) {
+              return '#10b3b0';
+          } else {
+              return '#2033ab';
+          }
+        },
+        opacity: 0.84,
+        borderWidth: 0,
+        borderColor: '#eee'
+      }
+    })
+    layer2.render();
+
+</script>
+</body>
+</html>
